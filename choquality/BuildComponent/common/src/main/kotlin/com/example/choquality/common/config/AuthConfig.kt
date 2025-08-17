@@ -1,8 +1,17 @@
 package com.example.choquality.common.config
 
+import com.example.choquality.common.exception.SDKException
+import com.example.choquality.common.jpa.entity.UserInfoEntity
+import com.example.choquality.common.jpa.entity.id.InfoId
+import com.example.choquality.common.jpa.repo.UserInfoRepository
 import com.example.choquality.common.jwt.JWTComponent
 import com.example.choquality.common.service.LoginService
+import com.example.choquality.common.spec.SDKSpec
+import jakarta.servlet.http.Cookie
 import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
+import org.springframework.data.domain.Example
+import org.springframework.data.domain.ExampleMatcher
 import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.AuthenticationException
@@ -12,8 +21,14 @@ import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken
 
-class AuthConfig {
+@Configuration
+class AuthConfig(
+    private val userInfoRepository: UserInfoRepository
+) {
+
+
 
     @Bean
     fun userDetailsService(): UserDetailsService =
@@ -52,96 +67,51 @@ class AuthConfig {
     ): LoginService =
         object : LoginService {
 
-            override fun check(corporate_id: String, username: String): LoginInfoDto {
-                val map = mutableMapOf<String, String>().apply {
-                    put("corporate_id", corporate_id)
-                    put("user_id", username)
-                    put("use_flag", CommonConstant.USE)
-                }
-                val loginInfoDto = sqlSession.selectOne("LoginMapper.attemptLogin", map) as? LoginInfoDto
-                return loginInfoDto ?: throw SDKException(SDKSpec.ERROR_LOGIN_ID)
-            }
-
-            override fun checkUser(company: String, username: String): LoginInfoDto {
-                val map = mutableMapOf<String, String>().apply {
-                    put("corporate_id", corporateId[company].toString())
-                    put("user_id", username)
-                    put("use_flag", CommonConstant.USE)
-                }
-                val loginInfoDto = sqlSession.selectOne("LoginMapper.attemptLogin", map) as? LoginInfoDto
-                    ?: throw SDKException(SDKSpec.ERROR_LOGIN_ID)
-
-                loginInfoDto.selectedDB = company
-                val menu = attemptMenu(loginInfoDto)
-                loginInfoDto.menuInfo = menu
-                return loginInfoDto
-            }
-
-            override fun createDefaultCookie(): Cookie =
-                Cookie(JWTConstant.CookieName, "").apply {
-                    path = "/"
-                    isHttpOnly = true
-                    secure = true
-                    maxAge = 60 * 60 * 24 // 24시간
-                }
-
-            private fun createAuthentication(loginInfoDto: LoginInfoDto, rawPassword: String): Authentication {
-                return if (passwordEncoder.matches(rawPassword, loginInfoDto.userPw)) {
+            private fun createAuthentication(loginInfoDto: UserInfoEntity, rawPassword: String): Authentication {
+                return if (passwordEncoder.matches(rawPassword, loginInfoDto.password)) {
                     preAuthToken(loginInfoDto)
                 } else {
                     PreAuthenticatedAuthenticationToken(loginInfoDto, "****")
                 }
             }
 
-            private fun preAuthToken(loginInfoDto: LoginInfoDto): PreAuthenticatedAuthenticationToken {
-                loginInfoDto.userPw = "****"
+            private fun preAuthToken(loginInfoDto: UserInfoEntity): PreAuthenticatedAuthenticationToken {
+                loginInfoDto.password = "****"
                 val authorities = listOf(SimpleGrantedAuthority("ROLE_USER"))
                 return PreAuthenticatedAuthenticationToken(loginInfoDto, "****", authorities)
             }
 
-            override fun attemptLogin(loginInfoDto: LoginInfoDto?, password: String): Cookie {
-                val cookie = createDefaultCookie()
-                if (loginInfoDto == null) return cookie
+            private fun checkUser(email: String): UserInfoEntity? {
+                fun findByUserId(email: String): UserInfoEntity? {
+                    val probe = UserInfoEntity(
+                        email=email
+                    )
+                    val matcher = ExampleMatcher.matching()
+                        .withIgnoreNullValues()
+                        .withIgnoreCase()
 
-                val auth = createAuthentication(loginInfoDto, password)
-                val result = authenticationProvider.authenticate(auth)
-                cookie.value = if (result.isAuthenticated) {
-                    jwtComponent.createToken(loginInfoDto)
-                } else {
-                    ""
+                    val example = Example.of(probe, matcher)
+                    return userInfoRepository.findAll(example)[0]
                 }
-                return cookie
+                return findByUserId(email)
             }
 
-            override fun attemptMobileLogin(loginInfoDto: LoginInfoDto, password: String): LoginInfoDto {
-                val auth = createAuthentication(loginInfoDto, password)
-                val result = authenticationProvider.authenticate(auth)
-                if (result.isAuthenticated) {
-                    loginInfoDto.token = jwtComponent.createToken(loginInfoDto)
-                    return loginInfoDto
-                } else {
-                    throw SDKException(SDKSpec.FAIL_LOGIN)
+            override fun attemptLogin(email: String, password: String): String {
+                val loginInfoDto = checkUser(email)
+                if(loginInfoDto != null){
+                    val auth = createAuthentication(loginInfoDto, password)
+                    val result = authenticationProvider.authenticate(auth)
+                    if (result.isAuthenticated) {
+                        return jwtComponent.createToken(loginInfoDto)
+                    } else {
+                        throw SDKException(SDKSpec.FAIL_LOGIN)
+                    }
                 }
+                throw SDKException(SDKSpec.FAIL_LOGIN)
             }
 
-            override fun attemptMenu(loginInfoDto: LoginInfoDto): List<LoginMenuInfoDto> {
-                val menus = sqlSession.selectList("LoginMapper.attemptMenu", loginInfoDto.userKey) as List<LoginMenuInfoDto>
-
-                // 일반보고서 메뉴 제외
-                if (!aiInterfaceService.isAiServiceEnabled(AiServiceCd.REPORT_NORMAL)) {
-                    return menus.filterNot { it.menuExecutePath == "/todo/main/general" }
-                }
-                return menus
-            }
-
-            override fun getMainUrl(menuList: List<LoginMenuInfoDto>): String =
-                menuList
-                    .firstOrNull { it.menuLvl == 0 }
-                    ?.menuExecutePath
-                    ?: "/"
-
-            override fun setLoginStatus(userDto: TblComUserDto) {
-                comUserService.updateUserLoginStatus(userDto)
+            override fun saveUser(email: String, password: String): Boolean {
+                TODO("Not yet implemented")
             }
         }
 }
