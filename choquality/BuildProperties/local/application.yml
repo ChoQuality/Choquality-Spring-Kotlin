@@ -1,0 +1,24 @@
+server:
+  servlet:
+    encoding:
+      charset: UTF-8
+  port: 8080
+  address: 0.0.0.0
+  url: http://localhost:8080
+spring:
+  application:
+    name: choquality
+  config:
+    import:
+      - datasource.yml
+      - jwt.yml
+  profiles:
+    active: local
+
+logging:
+  pattern:
+    console: '%d{YYYY-MM-dd HH:mm:ss} | %-5level | %C | %method | %msg %n'
+  level:
+    root: debug
+
+

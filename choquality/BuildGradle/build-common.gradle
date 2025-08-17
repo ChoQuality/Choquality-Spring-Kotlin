@@ -1,0 +1,21 @@
+apply plugin : "org.jetbrains.kotlin.jvm"
+
+compileJava.options.encoding = 'UTF-8'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+
+    implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
+    implementation 'org.jetbrains.kotlin:kotlin-reflect'
+    implementation 'org.projectlombok:lombok:1.18.34'
+
+
+
+}
+
+test {
+    useJUnitPlatform()
+}

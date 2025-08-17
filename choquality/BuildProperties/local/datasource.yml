@@ -1,0 +1,4 @@
+choquality:
+  datasource:
+    url: jdbc:sqlite:./choquality.db
+    class: org.sqlite.JDBC
