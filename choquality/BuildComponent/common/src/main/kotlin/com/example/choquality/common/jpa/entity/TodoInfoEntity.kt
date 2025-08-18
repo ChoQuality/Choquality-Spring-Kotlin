@@ -1,19 +1,18 @@
 package com.example.choquality.common.jpa.entity
 
-import com.example.choquality.common.jpa.entity.id.InfoId
 import com.fasterxml.jackson.annotation.JsonInclude
-import jakarta.persistence.Column
-import jakarta.persistence.EmbeddedId
-import jakarta.persistence.Entity
-import jakarta.persistence.Table
+import jakarta.persistence.*
 import org.hibernate.annotations.Comment
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Entity
 @Table(name = "tb_todo")
 open class TodoInfoEntity (
-    @EmbeddedId
-    open var id: InfoId? = null,
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    open var id: Int? = null,
 
     @Comment("todo title")
     @Column(name = "title")

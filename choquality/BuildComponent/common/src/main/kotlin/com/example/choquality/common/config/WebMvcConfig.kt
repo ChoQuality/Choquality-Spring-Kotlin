@@ -58,26 +58,14 @@ class WebMvcConfig(
     override fun addResourceHandlers(registry: ResourceHandlerRegistry) {
         registry
             .addResourceHandler(
-                "/assets/css/**",
-                "/assets/fonts/**",
-                "/assets/js/**",
-                "/assets/images/**",
-                "/assets/vendors/**",
                 "/static/js/**",
                 "/static/css/**",
                 "/static/assets/**"
             )
             .addResourceLocations(
-                "classpath:/assets/css/",
-                "classpath:/assets/fonts/",
-                "classpath:/assets/js/",
-                "classpath:/assets/images/",
-                "classpath:/assets/vendors/",
                 "classpath:/static/js/",
                 "classpath:/static/css/",
-                "classpath:/static/assets/",
-                "classpath:/static/file/"
+                "classpath:/static/assets/"
             )
-            .setCachePeriod(31_536_000)
     }
 }

@@ -2,10 +2,12 @@ package com.example.choquality.common.config
 
 import com.zaxxer.hikari.HikariDataSource
 import jakarta.persistence.EntityManagerFactory
+import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.boot.jdbc.DataSourceBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.env.Environment
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import org.springframework.orm.jpa.JpaTransactionManager
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter
@@ -13,6 +15,12 @@ import org.springframework.transaction.PlatformTransactionManager
 import java.util.*
 
 @Configuration
+@EnableJpaRepositories(
+    basePackages = ["com.example.choquality.common.jpa.repo"],
+    entityManagerFactoryRef = "entityManagerFactory",
+    transactionManagerRef = "transactionManager"
+)
+@EntityScan(basePackages = ["com.example.choquality.common.jpa.entity"])
 class DatasourceConfig(
     private val environment: Environment
 ) {
@@ -38,7 +46,7 @@ class DatasourceConfig(
         }
 
         return LocalContainerEntityManagerFactoryBean().apply {
-            setPackagesToScan("com.example.choquality.common.jpa")
+            setPackagesToScan("com.example.choquality.common.jpa.entity")
             setDataSource(dataSource)
             jpaVendorAdapter = vendorAdapter
             setJpaProperties(jpaProps)

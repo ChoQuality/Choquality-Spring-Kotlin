@@ -2,7 +2,6 @@ package com.example.choquality.common.config
 
 import com.example.choquality.common.exception.SDKException
 import com.example.choquality.common.jpa.entity.UserInfoEntity
-import com.example.choquality.common.jpa.entity.id.InfoId
 import com.example.choquality.common.jpa.repo.UserInfoRepository
 import com.example.choquality.common.jwt.JWTComponent
 import com.example.choquality.common.service.LoginService

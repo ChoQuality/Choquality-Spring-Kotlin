@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" href="/static/ico/favicon.ico" sizes="any">
+  <title>로그인</title>
+  <style>
+    :root{
+      --bg:#f4f6f8;
+      --card:#ffffff;
+      --text:#1f2937;
+      --muted:#6b7280;
+      --field:#f2f5f7;
+      --btn:#1f1f1f;
+      --btn-text:#ffffff;
+      --primary:#2E5BFF;
+      --radius:28px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; background:var(--bg); color:var(--text);
+      font-family: system-ui,-apple-system,Segoe UI,Roboto,Apple SD Gothic Neo,
+      Noto Sans KR,Pretendard,sans-serif;
+      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+    }
+    .container{max-width:1280px; margin:56px auto; padding:0 24px}
+    .card{
+      background:var(--card);
+      border-radius:var(--radius);
+      padding:64px;
+      box-shadow:0 20px 60px rgba(0,0,0,.06);
+    }
+    .grid{
+      display:grid;
+      grid-template-columns: 1.1fr 1.4fr;
+      align-items:center;
+      gap:72px;
+    }
+    .brand{
+      display:flex; flex-direction:column; gap:32px;
+    }
+    .brand-logo{
+      display:flex; align-items:center; gap:14px; font-weight:800; font-size:22px;
+    }
+    .brand-logo svg{display:block}
+    .brand h1{font-size:clamp(38px, 6vw, 64px); margin:0; letter-spacing:-.02em}
+    .form{
+      max-width:700px; width:100%;
+    }
+    .field{margin-bottom:22px}
+    .label{
+      font-size:14px; color:var(--muted); margin:0 0 10px 6px; display:block;
+    }
+    .input{
+      width:100%; height:56px; padding:0 22px;
+      border-radius:9999px; border:1px solid transparent;
+      background:var(--field); font-size:16px; outline:none;
+      transition: box-shadow .15s ease, border-color .15s ease;
+    }
+    .input::placeholder{color:#9aa3af}
+    .input:focus{
+      border-color:#d0d7e2;
+      box-shadow:0 0 0 4px rgba(46,91,255,.08);
+      background:#fff;
+    }
+    .btn{
+      width:100%; height:60px; border-radius:9999px;
+      background:var(--btn); color:var(--btn-text);
+      font-weight:800; font-size:18px; border:0; cursor:pointer;
+      display:inline-flex; align-items:center; justify-content:center;
+      transition: transform .12s ease, box-shadow .12s ease, opacity .12s ease;
+      box-shadow:0 10px 26px rgba(0,0,0,.12);
+    }
+    .btn:hover{ transform:translateY(-1px); box-shadow:0 16px 34px rgba(0,0,0,.16) }
+    .btn:active{ transform:translateY(0) }
+    .helper{
+      margin-top:14px; color:var(--muted); font-size:13px; text-align:right;
+    }
+    .msg{ margin-top:14px; font-size:14px; }
+    .msg.error{ color:#dc2626 }
+    .msg.ok{ color:#059669 }
+
+    @media (max-width: 980px){
+      .card{ padding:32px }
+      .grid{ grid-template-columns: 1fr; gap:36px }
+      .brand{ align-items:flex-start }
+    }
+  </style>
+  <script defer src="/static/js/awp/AWP.js?v=20250701"></script>
+</head>
+<body>
+<div class="container">
+  <section class="card">
+    <div class="grid">
+      <!-- Left: Brand -->
+      <div class="brand">
+        <div class="brand-logo" aria-label="Choquality">
+          <!-- 심플 로고 (플레이스홀더 SVG) -->
+          <svg width="640" height="128" viewBox="0 0 320 64" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Choquality logo">
+            <defs>
+              <linearGradient id="g1" x1="8" y1="8" x2="56" y2="56" gradientUnits="userSpaceOnUse">
+                <stop offset="0" stop-color="#21C064"/>
+                <stop offset="1" stop-color="#2E5BFF"/>
+              </linearGradient>
+            </defs>
+            <!-- Icon -->
+            <g transform="translate(0,0)">
+              <rect x="8" y="8" width="48" height="48" rx="14" fill="url(#g1)"/>
+              <!-- 'C' 스트로크 -->
+              <path d="M44 20 A12 12 0 1 0 44 44" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" fill="none"/>
+            </g>
+
+            <!-- Wordmark -->
+            <g transform="translate(72,0)">
+              <style>
+                .brand { font-family: Inter, Pretendard, "Noto Sans KR", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; }
+                .cho { font-weight: 800; fill: #2E5BFF; }
+                .q   { font-weight: 800; fill: #111827; }
+                .rest{ font-weight: 700; fill: #111827; }
+              </style>
+              <text class="brand" x="0" y="42" font-size="28" letter-spacing="0.2px">
+                <tspan class="cho">Cho</tspan><tspan class="q">q</tspan><tspan class="rest">uality</tspan>
+              </text>
+            </g>
+          </svg>
+        </div>
+        <h1>로그인</h1>
+      </div>
+
+      <!-- Right: Form -->
+      <form id="loginForm" class="form" novalidate>
+        <div class="field">
+          <label class="label" for="username">아이디</label>
+          <input class="input" id="username" name="username" type="email"
+                 placeholder="이메일 주소를 입력해주세요." autocomplete="username" required />
+        </div>
+
+        <div class="field">
+          <label class="label" for="password">비밀번호</label>
+          <input class="input" id="password" name="password" type="password"
+                 placeholder="8자~12자, 영문/숫자/특수문자 포함" autocomplete="current-password" required />
+        </div>
+
+        <button id="submitBtn" class="btn" type="submit">로그인</button>
+        <div id="message" class="msg" role="status" aria-live="polite"></div>
+      </form>
+    </div>
+  </section>
+</div>

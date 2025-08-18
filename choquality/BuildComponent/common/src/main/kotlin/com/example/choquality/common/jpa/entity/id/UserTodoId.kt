@@ -8,7 +8,6 @@ import java.io.Serializable
 data class UserTodoId(
     @Column(name = "user_id")
     var userId: Int? = null,
-
     @Column(name = "todo_id")
     var todoId: Int? = null
 ) : Serializable

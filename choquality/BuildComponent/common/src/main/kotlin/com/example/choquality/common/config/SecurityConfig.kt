@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
 import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.web.SecurityFilterChain
@@ -49,7 +48,6 @@ class SecurityConfig(
             }
             .authorizeHttpRequests { auth ->
                 auth
-
                     .requestMatchers(
                         HttpMethod.GET,
                         *arrayOf(
@@ -62,29 +60,14 @@ class SecurityConfig(
                     .requestMatchers(
                         HttpMethod.GET,
                         *arrayOf(
-                            "/admin/**",
-                            "/ai/**",
-                            "/messenger/**",
-                            "/websocket/**",
-                            "/todo/**",
-                            "/praise/**",
-                            "/report/**",
-                            "/portlet/**",
-                            "/portlet/env/**",
-                            "/test/**"
+                            "/"
                         )
                     ).permitAll()
-                    .requestMatchers(HttpMethod.GET, *arrayOf("/api/interface/**", "/api/**")).permitAll()
-                    .requestMatchers(HttpMethod.POST, "/api/**").permitAll()
+
                     .requestMatchers(
-                        HttpMethod.GET,
-                        *arrayOf("/login/**", "/login/logout", "/login/keycloak/**")
+                        HttpMethod.POST,*arrayOf("/login/**")
                     ).permitAll()
-                    .requestMatchers(
-                        HttpMethod.POST,
-                        *arrayOf("/login/**", "/login/mobile", "/login/keycloak/**")
-                    ).permitAll()
-                    .requestMatchers(HttpMethod.GET, *arrayOf("/", "/keycloak")).permitAll()
+
                     .requestMatchers(HttpMethod.OPTIONS).denyAll()
                     .requestMatchers(HttpMethod.GET).denyAll()
                     .requestMatchers(HttpMethod.POST).denyAll()

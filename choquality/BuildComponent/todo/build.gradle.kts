@@ -47,8 +47,7 @@ kotlin {
 }
 
 dependencies {
-    compileOnly("org.projectlombok:lombok")
-    annotationProcessor("org.projectlombok:lombok")
+    implementation(project(":common"))
 }
 
 val libs = file("../../BuildLibs/todo")

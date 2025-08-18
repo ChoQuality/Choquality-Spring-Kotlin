@@ -78,6 +78,7 @@ tasks.test {
 
 tasks.compileKotlin {
     dependsOn(":common:jar")
+    dependsOn(":todo:jar")
 }
 
 tasks.bootJar {
