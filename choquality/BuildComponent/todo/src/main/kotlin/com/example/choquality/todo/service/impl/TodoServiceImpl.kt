@@ -92,7 +92,7 @@ class TodoServiceImpl(
             todoInfoRepository.deleteById(todoId)
             userTodoRepository.deleteById(UserTodoId(userId, todoId))
         } else
-            throw SDKException(SDKSpec.FAIL_TODO_UPDATE)
+            throw SDKException(SDKSpec.FAIL_TODO_DELETE)
         return true
     }
 

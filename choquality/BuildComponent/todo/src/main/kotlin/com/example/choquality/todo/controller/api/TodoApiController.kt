@@ -86,7 +86,7 @@ class TodoApiController(
 
         val userId = user.loginInfo.id ?: throw SDKException(SDKSpec.FAIL_LOGIN)
         val userInfoEntity = loginService.get(userId)
-        val todoEntity = TodoInfoEntity(title = data.title, content = data.content, writer = userInfoEntity.name)
+        val todoEntity = TodoInfoEntity(id=todoId,title = data.title, content = data.content, writer = userInfoEntity.name)
         todoService.updateTodo(userId,todoId,todoEntity)
 
         val body = ResponseDto(
@@ -97,7 +97,7 @@ class TodoApiController(
         return ResponseEntity.status(HttpStatus.OK).body(body)
     }
 
-    @DeleteMapping(path = ["/{todoId}"], consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @DeleteMapping(path = ["/{todoId}"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun deleteTodo(
         @AuthenticationPrincipal user: ChoqualityUser,
         @PathVariable("todoId") todoId: Int
@@ -116,7 +116,7 @@ class TodoApiController(
         return ResponseEntity.status(HttpStatus.OK).body(body)
     }
 
-    @GetMapping(path = ["/search"], consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @GetMapping(path = ["/search"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun searchTodo(
         @AuthenticationPrincipal user: ChoqualityUser,
         @RequestParam("title") title: String?,

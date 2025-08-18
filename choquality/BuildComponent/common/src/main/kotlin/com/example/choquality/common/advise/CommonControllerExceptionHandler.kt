@@ -16,7 +16,7 @@ class CommonControllerExceptionHandler {
 
     @ExceptionHandler(value = [NullPointerException::class, SecurityException::class, SDKException::class])
     fun handleForbidden(): ModelAndView =
-        ModelAndView("error/403").apply { status = HttpStatus.FORBIDDEN }
+        ModelAndView("error/401").apply { status = HttpStatus.UNAUTHORIZED }
 
     @ExceptionHandler(NoHandlerFoundException::class)
     fun handleNotFound(): ModelAndView =

@@ -35,7 +35,7 @@ class TodoApiExceptionHandler {
     fun handleSdk(ex: SDKException): ResponseEntity<ResponseDto<Nothing>> {
         val status = when (ex.code) {
             SDKSpec.FAIL_TODO_GET.code,SDKSpec.FAIL_TODO_UPDATE.code,SDKSpec.FAIL_TODO_DELETE.code -> HttpStatus.NOT_FOUND
-            else -> HttpStatus.INTERNAL_SERVER_ERROR
+            else -> HttpStatus.NOT_FOUND
         }
         val body = ResponseDto(code = ex.code, msg = ex.message, data = null)
         return ResponseEntity.status(status).body(body)
