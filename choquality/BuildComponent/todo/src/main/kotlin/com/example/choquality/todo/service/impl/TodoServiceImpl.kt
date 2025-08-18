@@ -1,35 +1,95 @@
 package com.example.choquality.todo.service.impl
 
+import com.example.choquality.common.exception.SDKException
 import com.example.choquality.common.jpa.entity.TodoInfoEntity
+import com.example.choquality.common.jpa.entity.UserTodoEntity
+import com.example.choquality.common.jpa.entity.id.UserTodoId
 import com.example.choquality.common.jpa.repo.TodoInfoRepository
+import com.example.choquality.common.jpa.repo.UserTodoRepository
+import com.example.choquality.common.spec.SDKSpec
 import com.example.choquality.todo.service.TodoService
+import org.springframework.data.domain.Example
+import org.springframework.data.domain.ExampleMatcher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
 class TodoServiceImpl(
     private val todoInfoRepository: TodoInfoRepository
+    ,private val userTodoRepository: UserTodoRepository
 ) : TodoService {
+    override fun getTodoList(userId: Int): List<TodoInfoEntity> {
+        val probe = UserTodoEntity().apply {
+            id = UserTodoId(userId = userId)
+        }
+        val matcher = ExampleMatcher.matchingAll()
+            .withIgnoreNullValues()
+            .withIgnoreCase()
 
-    override fun getTodoList(): List<TodoInfoEntity> {
-        return todoInfoRepository.findAll()
+        val example = Example.of(probe, matcher)
+        val todos: List<TodoInfoEntity> =
+            userTodoRepository.findAll(example)
+                .mapNotNull { it.todo }
+
+        return todos
     }
 
     @Transactional
-    override fun createTodo(todoInfo:TodoInfoEntity): Boolean {
+    override fun createTodo(userId: Int, todoInfo: TodoInfoEntity): Boolean {
         val savedTodo = todoInfoRepository.save(todoInfo)
-        return savedTodo.id != null
+        val savedUserTodo = userTodoRepository.save(UserTodoEntity().apply { id =  UserTodoId(userId = userId, todoId = savedTodo.id) })
+        return savedUserTodo.id != null
     }
 
-    override fun updateTodo(todoInfo: TodoInfoEntity): Boolean {
-        TODO("Not yet implemented")
+    @Transactional
+    override fun updateTodo(userId: Int, todoId: Int, todoInfo: TodoInfoEntity): Boolean {
+        val probe = UserTodoEntity().apply {
+            id = UserTodoId(userId = userId, todoId = todoId)
+        }
+        val matcher = ExampleMatcher.matchingAll()
+            .withIgnoreNullValues()
+            .withIgnoreCase()
+
+        val example = Example.of(probe, matcher)
+        if(userTodoRepository.findOne(example).isPresent)
+            todoInfoRepository.save(todoInfo)
+        else
+            throw SDKException(SDKSpec.FAIL_TODO_UPDATE)
+        return true
     }
 
-    override fun deleteTodo(id: Int): TodoInfoEntity {
-        TODO("Not yet implemented")
+    @Transactional
+    override fun deleteTodo(userId: Int, todoId: Int): Boolean {
+        val probe = UserTodoEntity().apply {
+            id = UserTodoId(userId = userId, todoId = todoId)
+        }
+        val matcher = ExampleMatcher.matchingAll()
+            .withIgnoreNullValues()
+            .withIgnoreCase()
+
+        val example = Example.of(probe, matcher)
+        if(userTodoRepository.findOne(example).isPresent){
+            todoInfoRepository.deleteById(todoId)
+            userTodoRepository.deleteById(UserTodoId(userId, todoId))
+        } else
+            throw SDKException(SDKSpec.FAIL_TODO_UPDATE)
+        return true
     }
 
-    override fun searchTodo(id: Int): TodoInfoEntity {
-        TODO("Not yet implemented")
+    override fun searchTodo(userId: Int, todoId: Int): TodoInfoEntity? {
+        val probe = UserTodoEntity().apply {
+            id = UserTodoId(userId = userId, todoId = todoId)
+        }
+        val matcher = ExampleMatcher.matchingAll()
+            .withIgnoreNullValues()
+            .withIgnoreCase()
+
+        val example = Example.of(probe, matcher)
+        val userTodoEntity = userTodoRepository.findOne(example)
+        if(userTodoEntity.isPresent)
+            return userTodoEntity.get().todo
+        else
+            return TodoInfoEntity()
     }
+
 }

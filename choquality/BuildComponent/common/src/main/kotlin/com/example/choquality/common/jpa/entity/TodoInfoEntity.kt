@@ -19,7 +19,7 @@ open class TodoInfoEntity (
     open var title: String? = null,
 
     @Comment("todo content")
-    @Column(name = "title")
+    @Column(name = "content")
     open var content: String? = null,
 
     @Comment("todo writer")
