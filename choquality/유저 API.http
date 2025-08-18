@@ -1,0 +1,32 @@
+### 유저 등록
+POST http://localhost:9090/users/signup
+Content-Type: application/json
+
+{
+  "email":"1@gg.gg"
+,"name":"1gg"
+,"password":"1234"
+}
+### 유저 등록
+POST http://localhost:9090/users/signup
+Content-Type: application/json
+
+{
+  "email":"1@gg.gg"
+  ,"name":"1gg"
+  ,"password":"1234"
+}
+
+### Authorization by token, part 1. Retrieve and save token.
+POST https://examples.http-client.intellij.net/body-echo
+Content-Type: application/json
+
+{
+  "token": "my-secret-token"
+}
+
+> {% client.global.set("auth_token", response.body.token); %}
+
+### Authorization by token, part 2. Use token to authorize.
+GET https://examples.http-client.intellij.net/headers
+Authorization: Bearer {{auth_token}}
