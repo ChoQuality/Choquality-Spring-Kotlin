@@ -42,7 +42,8 @@ apply(from = extra["test"] as String)
 setResource(profile)
 
 group = "com.example.choquality.proxy"
-version = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyMMdd"))
+/*version = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyMMdd"))*/
+version = "ver0001"
 
 java {
     toolchain {
