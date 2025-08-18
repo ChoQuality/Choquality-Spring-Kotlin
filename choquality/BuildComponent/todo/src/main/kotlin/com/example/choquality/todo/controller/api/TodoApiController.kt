@@ -7,6 +7,8 @@ import com.example.choquality.common.service.LoginService
 import com.example.choquality.common.spec.SDKSpec
 import com.example.choquality.common.user.ChoqualityUser
 import com.example.choquality.todo.dto.TodoReq
+import com.example.choquality.todo.dto.TodoRes
+import com.example.choquality.todo.mapper.toRes
 import com.example.choquality.todo.service.TodoService
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -27,9 +29,9 @@ class TodoApiController(
     @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
     fun getTodos(
         @AuthenticationPrincipal user: ChoqualityUser
-    ): ResponseEntity<ResponseDto<List<TodoInfoEntity>>> {
+    ): ResponseEntity<ResponseDto<List<TodoRes>>> {
         val userId = user.loginInfo.id ?: throw SDKException(SDKSpec.FAIL_LOGIN)
-        val todoList  = todoService.getTodoList(userId)
+        val todoList  = todoService.getTodoList(userId).map { it.toRes() }
         val body = ResponseDto(
             code = SDKSpec.SUCCESS.code,
             msg = SDKSpec.SUCCESS.message,
@@ -47,7 +49,7 @@ class TodoApiController(
         val userInfoEntity = loginService.get(userId)
         val todoEntity = TodoInfoEntity(title = data.title, content = data.content, writer = userInfoEntity.name)
 
-        todoService.createTodo(userId,todoEntity)
+        todoService.createTodo(userInfoEntity,todoEntity)
 
         val body = ResponseDto(
             code = SDKSpec.SUCCESS.code,
@@ -61,7 +63,7 @@ class TodoApiController(
     fun getTodo(
         @AuthenticationPrincipal user: ChoqualityUser,
         @PathVariable("todoId") todoId: Int
-    ): ResponseEntity<ResponseDto<TodoInfoEntity>> {
+    ): ResponseEntity<ResponseDto<TodoRes>> {
 
         val userId = user.loginInfo.id ?: throw SDKException(SDKSpec.FAIL_LOGIN)
         loginService.get(userId)
@@ -70,7 +72,7 @@ class TodoApiController(
         val body = ResponseDto(
             code = SDKSpec.SUCCESS.code,
             msg = SDKSpec.SUCCESS.message,
-            data = todoEntity
+            data = todoEntity.toRes()
         )
         return ResponseEntity.status(HttpStatus.OK).body(body)
     }
@@ -80,7 +82,7 @@ class TodoApiController(
         @AuthenticationPrincipal user: ChoqualityUser,
         @PathVariable("todoId") todoId: Int,                   // ← path variable
         @RequestBody @Validated data: TodoReq
-    ): ResponseEntity<ResponseDto<String>> {
+    ): ResponseEntity<ResponseDto<TodoRes>> {
 
         val userId = user.loginInfo.id ?: throw SDKException(SDKSpec.FAIL_LOGIN)
         val userInfoEntity = loginService.get(userId)
@@ -90,7 +92,7 @@ class TodoApiController(
         val body = ResponseDto(
             code = SDKSpec.SUCCESS.code,
             msg = SDKSpec.SUCCESS.message,
-            data = SDKSpec.SUCCESS.message
+            data = todoEntity.toRes()
         )
         return ResponseEntity.status(HttpStatus.OK).body(body)
     }
@@ -99,7 +101,7 @@ class TodoApiController(
     fun deleteTodo(
         @AuthenticationPrincipal user: ChoqualityUser,
         @PathVariable("todoId") todoId: Int
-    ): ResponseEntity<ResponseDto<String>> {
+    ): ResponseEntity<ResponseDto<Nothing>> {
 
         val userId = user.loginInfo.id ?: throw SDKException(SDKSpec.FAIL_LOGIN)
         loginService.get(userId)
@@ -109,7 +111,7 @@ class TodoApiController(
         val body = ResponseDto(
             code = SDKSpec.SUCCESS.code,
             msg = SDKSpec.SUCCESS.message,
-            data = SDKSpec.SUCCESS.message
+            data = null
         )
         return ResponseEntity.status(HttpStatus.OK).body(body)
     }
@@ -119,12 +121,12 @@ class TodoApiController(
         @AuthenticationPrincipal user: ChoqualityUser,
         @RequestParam("title") title: String?,
         @RequestParam("content") content: String?,
-    ): ResponseEntity<ResponseDto<List<TodoInfoEntity>>> {
+    ): ResponseEntity<ResponseDto<List<TodoRes>>> {
 
         val userId = user.loginInfo.id ?: throw SDKException(SDKSpec.FAIL_LOGIN)
         loginService.get(userId)
 
-        val todoList = todoService.searchTodo(userId,title,content)
+        val todoList = todoService.searchTodo(userId,title,content).map { it.toRes() }
         val body = ResponseDto(
             code = SDKSpec.SUCCESS.code,
             msg = SDKSpec.SUCCESS.message,

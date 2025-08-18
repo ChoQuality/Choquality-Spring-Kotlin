@@ -2,14 +2,17 @@ package com.example.choquality.common.advise
 
 
 import com.example.choquality.common.exception.SDKException
+import org.springframework.core.Ordered
+import org.springframework.core.annotation.Order
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.NoHandlerFoundException
 
+@Order(Ordered.LOWEST_PRECEDENCE)
 @RestControllerAdvice
-class GlobalControllerExceptionHandler {
+class CommonControllerExceptionHandler {
 
     @ExceptionHandler(value = [NullPointerException::class, SecurityException::class, SDKException::class])
     fun handleForbidden(): ModelAndView =

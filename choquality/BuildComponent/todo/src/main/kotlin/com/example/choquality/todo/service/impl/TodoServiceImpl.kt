@@ -2,6 +2,7 @@ package com.example.choquality.todo.service.impl
 
 import com.example.choquality.common.exception.SDKException
 import com.example.choquality.common.jpa.entity.TodoInfoEntity
+import com.example.choquality.common.jpa.entity.UserInfoEntity
 import com.example.choquality.common.jpa.entity.UserTodoEntity
 import com.example.choquality.common.jpa.entity.id.UserTodoId
 import com.example.choquality.common.jpa.repo.TodoInfoRepository
@@ -50,9 +51,13 @@ class TodoServiceImpl(
     }
 
     @Transactional
-    override fun createTodo(userId: Int, todoInfo: TodoInfoEntity): Boolean {
+    override fun createTodo(userInfo : UserInfoEntity, todoInfo: TodoInfoEntity): Boolean {
         val savedTodo = todoInfoRepository.save(todoInfo)
-        val savedUserTodo = userTodoRepository.save(UserTodoEntity().apply { id =  UserTodoId(userId = userId, todoId = savedTodo.id) })
+        val savedUserTodo = userTodoRepository.save(UserTodoEntity().apply {
+            id =  UserTodoId(userId = userInfo.id, todoId = savedTodo.id)
+            user = userInfo
+            todo = savedTodo
+        })
         return savedUserTodo.id != null
     }
 

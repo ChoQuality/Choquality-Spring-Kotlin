@@ -2,8 +2,10 @@ package com.example.choquality.common.controller.api
 
 import com.example.choquality.common.dto.LoginReq
 import com.example.choquality.common.dto.ResponseDto
+import com.example.choquality.common.dto.UserRes
 import com.example.choquality.common.exception.SDKException
 import com.example.choquality.common.jpa.entity.UserInfoEntity
+import com.example.choquality.common.mapper.toRes
 import com.example.choquality.common.service.LoginService
 import com.example.choquality.common.spec.SDKSpec
 import com.example.choquality.common.user.ChoqualityUser
@@ -63,14 +65,14 @@ class LoginApiController(
     @GetMapping(path = ["/me"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun getMe(
         @AuthenticationPrincipal user: ChoqualityUser
-    ): ResponseEntity<ResponseDto<UserInfoEntity>> {
+    ): ResponseEntity<ResponseDto<UserRes>> {
 
         val userId = user.loginInfo.id ?: throw SDKException(SDKSpec.FAIL_LOGIN)
         val userInfoEntity = loginService.get(userId)
         val body = ResponseDto(
             code = SDKSpec.SUCCESS.code,
             msg = SDKSpec.SUCCESS.message,
-            data = userInfoEntity
+            data = userInfoEntity.toRes()
         )
         return ResponseEntity.status(HttpStatus.OK).body(body)
     }
@@ -79,7 +81,7 @@ class LoginApiController(
     fun putMe(
         @AuthenticationPrincipal user: ChoqualityUser,
         @RequestBody @Validated data: LoginReq
-    ): ResponseEntity<ResponseDto<UserInfoEntity>> {
+    ): ResponseEntity<ResponseDto<UserRes>> {
 
         val userId = user.loginInfo.id ?: throw SDKException(SDKSpec.FAIL_LOGIN)
         val userInfoEntity = loginService.get(userId).apply {
@@ -91,7 +93,7 @@ class LoginApiController(
         val body = ResponseDto(
             code = SDKSpec.SUCCESS.code,
             msg = SDKSpec.SUCCESS.message,
-            data = userInfoEntity
+            data = userInfoEntity.toRes()
         )
         return ResponseEntity.status(HttpStatus.OK).body(body)
     }
