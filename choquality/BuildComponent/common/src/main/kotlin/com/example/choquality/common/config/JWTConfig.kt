@@ -46,7 +46,7 @@ class JWTConfig(
                 return JWT.create()
                     .withIssuer(JWTConstant.IssuerServer)
                     .withSubject(JWTConstant.Subject)
-                    .withClaim(JWTConstant.Claim_User_Id, userInfoEntity.email)
+                    .withClaim(JWTConstant.Claim_User_Id, userInfoEntity.id)
                     .withClaim(JWTConstant.Claim_User_Name, userInfoEntity.name)
                     .withIssuedAt(now)
                     .withExpiresAt(now.plusSeconds(JWTConstant.Twelve_hour_second))
@@ -58,9 +58,9 @@ class JWTConfig(
                     val decoded = jwtVerifier.verify(token)
                     validateToken(decoded)
                 } catch (e: io.jsonwebtoken.ExpiredJwtException) {
-                    validateToken(JWT.decode(token))
+                    throw SDKException(SDKSpec.FAIL_JWT_VALID)
                 } catch (e: TokenExpiredException) {
-                    validateToken(JWT.decode(token))
+                    throw SDKException(SDKSpec.FAIL_JWT_VALID)
                 } catch (e: Exception) {
                     throw SDKException(SDKSpec.FAIL_JWT_VALID)
                 }
@@ -70,7 +70,7 @@ class JWTConfig(
                 val decoded = JWT.decode(token)
 
                 return UserInfoEntity(
-                    email = decoded.getClaim(JWTConstant.Claim_User_Id).asString(),
+                    id = decoded.getClaim(JWTConstant.Claim_User_Id).asInt(),
                     name = decoded.getClaim(JWTConstant.Claim_User_Name).asString(),
                     password = "*****"
                 )

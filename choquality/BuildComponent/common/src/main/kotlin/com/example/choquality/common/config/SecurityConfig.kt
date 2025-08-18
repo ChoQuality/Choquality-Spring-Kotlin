@@ -58,7 +58,13 @@ class SecurityConfig(
                     ).permitAll()
                     .requestMatchers(HttpMethod.GET).permitAll()
                     .requestMatchers(
-                        HttpMethod.POST,*arrayOf("/login/**")
+                        HttpMethod.POST,*arrayOf("/users/signup","/users/login","/todos/**")
+                    ).permitAll()
+                    .requestMatchers(
+                        HttpMethod.PUT,*arrayOf("/users/me","/todos/**")
+                    ).permitAll()
+                    .requestMatchers(
+                        HttpMethod.DELETE,*arrayOf("/users/me","/todos/**")
                     ).permitAll()
 
                     .requestMatchers(HttpMethod.OPTIONS).denyAll()

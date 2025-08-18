@@ -47,8 +47,8 @@ open class LoginServiceImpl(
     }
 
     @Transactional
-    override fun saveUser(email: String, name: String, password: String): Boolean {
-       val saveUser = userInfoRepository.save(
+    override fun signup(email: String, name: String, password: String): Boolean {
+        val saveUser = userInfoRepository.save(
             UserInfoEntity().apply {
                 this.email = email
                 this.name = name
@@ -59,8 +59,30 @@ open class LoginServiceImpl(
     }
 
     @Transactional
-    override fun deleteAllUsers(): Boolean {
-        userInfoRepository.deleteAll()
-        return userInfoRepository.count() == 0L
+    override fun delete(userId: Int): Boolean {
+        userInfoRepository.deleteById(userId)
+        return true
+    }
+
+    @Transactional
+    override fun put(userId: Int, userInfo: UserInfoEntity): Boolean {
+        val probe = UserInfoEntity().apply { this.id = userId }
+        val matcher = ExampleMatcher.matching().withIgnoreNullValues().withIgnoreCase()
+        val example = Example.of(probe, matcher)
+        val tempUserInfo = userInfoRepository.findOne(example).orElse(null)
+        tempUserInfo ?: throw SDKException(SDKSpec.FAIL_PUT)
+        tempUserInfo.name = userInfo.name ?: tempUserInfo.name
+        tempUserInfo.password = userInfo.password?.let { passwordEncoder.encode(it) } ?: tempUserInfo.password
+        val savedUser = userInfoRepository.save(tempUserInfo)
+        return savedUser.id == userId
+    }
+
+    override fun get(userId: Int): UserInfoEntity {
+        val probe = UserInfoEntity().apply { this.id = userId }
+        val matcher = ExampleMatcher.matching().withIgnoreNullValues().withIgnoreCase()
+        val example = Example.of(probe, matcher)
+        val tempUserInfo = userInfoRepository.findOne(example).orElse(null)
+        tempUserInfo ?: throw SDKException(SDKSpec.FAIL_GET)
+        return tempUserInfo
     }
 }

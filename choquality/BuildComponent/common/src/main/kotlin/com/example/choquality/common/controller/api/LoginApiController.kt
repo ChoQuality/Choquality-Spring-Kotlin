@@ -1,73 +1,112 @@
 package com.example.choquality.common.controller.api
 
+import com.example.choquality.common.dto.LoginReq
 import com.example.choquality.common.dto.ResponseDto
 import com.example.choquality.common.exception.SDKException
+import com.example.choquality.common.jpa.entity.UserInfoEntity
 import com.example.choquality.common.service.LoginService
 import com.example.choquality.common.spec.SDKSpec
-import jakarta.servlet.http.HttpServletResponse
+import com.example.choquality.common.user.ChoqualityUser
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.orm.jpa.JpaSystemException
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.validation.annotation.Validated
+import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/login")
+@RequestMapping("/users")
 class LoginApiController(
     private val loginService: LoginService
 ) {
     private val log = LoggerFactory.getLogger(LoginApiController::class.java)
 
-    @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
+    @PostMapping(path=["/login"],produces = [MediaType.APPLICATION_JSON_VALUE])
     fun login(
-        @RequestBody requestBody: Map<String, String>
-    ): ResponseEntity<ResponseDto<String>> {
+        @RequestBody @Validated data: LoginReq
+    ): ResponseEntity<ResponseDto<Nothing>> {
 
-        val username = requestBody["email"] ?: throw SDKException(SDKSpec.FAIL_LOGIN)
-        val password = requestBody["password"]?: throw SDKException(SDKSpec.FAIL_LOGIN)
+        val email = data.email ?: throw SDKException(SDKSpec.FAIL_LOGIN)
+        val password = data.password ?: throw SDKException(SDKSpec.FAIL_LOGIN)
 
-        val loginToken = loginService.attemptLogin(username,password)
+        val loginToken = loginService.attemptLogin(email,password)
 
         val body = ResponseDto(
             code = SDKSpec.SUCCESS.code,
             msg = SDKSpec.SUCCESS.message,
-            data = loginToken
+            data = null,
+            access_token = loginToken
+
         )
         return ResponseEntity.status(HttpStatus.OK).body(body)
     }
 
-    @PostMapping(path = ["/save"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun saveUser(
-        @RequestBody requestBody: Map<String, String>
-    ): ResponseEntity<ResponseDto<String>> {
+    @PostMapping(path = ["/signup"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun signup(
+        @RequestBody @Validated data: LoginReq
+    ): ResponseEntity<ResponseDto<LoginReq>> {
 
-        val email = requestBody["email"] ?: throw SDKException(SDKSpec.FAIL_SAVE_USER)
-        val username = requestBody["name"] ?: email
-        val password = requestBody["password"]?: throw SDKException(SDKSpec.FAIL_SAVE_USER)
+        val email = data.email ?: throw SDKException(SDKSpec.FAIL_SIGNUP)
+        val username = data.name ?: throw SDKException(SDKSpec.FAIL_SIGNUP)
+        val password = data.password ?: throw SDKException(SDKSpec.FAIL_SIGNUP)
 
-        loginService.saveUser(email,username,password)
+        loginService.signup(email,username,password)
         val body = ResponseDto(
             code = SDKSpec.SUCCESS.code,
             msg = SDKSpec.SUCCESS.message,
-            data = SDKSpec.SUCCESS.message
+            data = data
         )
         return ResponseEntity.status(HttpStatus.OK).body(body)
     }
 
-    @GetMapping(path = ["/deleteAllUser"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun deleteAllUser(): ResponseEntity<ResponseDto<String>> {
+    @GetMapping(path = ["/me"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun getMe(
+        @AuthenticationPrincipal user: ChoqualityUser
+    ): ResponseEntity<ResponseDto<UserInfoEntity>> {
 
-        loginService.deleteAllUsers()
+        val userId = user.loginInfo.id ?: throw SDKException(SDKSpec.FAIL_LOGIN)
+        val userInfoEntity = loginService.get(userId)
         val body = ResponseDto(
             code = SDKSpec.SUCCESS.code,
             msg = SDKSpec.SUCCESS.message,
-            data = SDKSpec.SUCCESS.message
+            data = userInfoEntity
         )
         return ResponseEntity.status(HttpStatus.OK).body(body)
     }
+
+    @PutMapping(path = ["/me"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun putMe(
+        @AuthenticationPrincipal user: ChoqualityUser,
+        @RequestBody @Validated data: LoginReq
+    ): ResponseEntity<ResponseDto<UserInfoEntity>> {
+
+        val userId = user.loginInfo.id ?: throw SDKException(SDKSpec.FAIL_LOGIN)
+        val userInfoEntity = loginService.get(userId).apply {
+            name = data.name
+            password = data.password
+        }
+
+        loginService.put(userId,userInfoEntity)
+        val body = ResponseDto(
+            code = SDKSpec.SUCCESS.code,
+            msg = SDKSpec.SUCCESS.message,
+            data = userInfoEntity
+        )
+        return ResponseEntity.status(HttpStatus.OK).body(body)
+    }
+    @DeleteMapping(path = ["/me"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun deleteMe(
+        @AuthenticationPrincipal user: ChoqualityUser
+    ): ResponseEntity<ResponseDto<Nothing>> {
+        val userId = user.loginInfo.id ?: throw SDKException(SDKSpec.FAIL_LOGIN)
+        loginService.delete(userId)
+        val body = ResponseDto(
+            code = SDKSpec.SUCCESS.code,
+            msg = SDKSpec.SUCCESS.message,
+            data = null
+        )
+        return ResponseEntity.status(HttpStatus.OK).body(body)
+    }
+
 }

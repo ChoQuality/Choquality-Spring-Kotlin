@@ -22,9 +22,9 @@ class CommonApiExceptionHandler {
     @ExceptionHandler(SDKException::class)
     fun handleSdk(ex: SDKException): ResponseEntity<ResponseDto<Nothing>> {
         val status = when (ex.code) {
-            SDKSpec.FAIL_LOGIN.code, SDKSpec.JWT_EXPIRED.code -> HttpStatus.UNAUTHORIZED
-            SDKSpec.FAIL_SAVE_USER.code -> HttpStatus.CONFLICT
-            SDKSpec.FAIL_JWT_VALID.code, SDKSpec.FAIL_JWT_INIT.code -> HttpStatus.BAD_REQUEST
+            SDKSpec.FAIL_LOGIN.code,SDKSpec.FAIL_GET.code, SDKSpec.JWT_EXPIRED.code,SDKSpec.FAIL_JWT_VALID.code, SDKSpec.FAIL_JWT_INIT.code -> HttpStatus.UNAUTHORIZED
+            SDKSpec.FAIL_SIGNUP.code -> HttpStatus.CONFLICT
+            SDKSpec.FAIL_PUT.code -> HttpStatus.BAD_REQUEST
             else -> HttpStatus.INTERNAL_SERVER_ERROR
         }
         val body = ResponseDto(code = ex.code, msg = ex.message, data = null)

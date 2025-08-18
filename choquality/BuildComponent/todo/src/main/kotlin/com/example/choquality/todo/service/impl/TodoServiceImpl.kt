@@ -34,6 +34,21 @@ class TodoServiceImpl(
         return todos
     }
 
+    override fun getTodo(userId: Int, todoId: Int): TodoInfoEntity {
+        val probe = UserTodoEntity().apply {
+            id = UserTodoId(userId = userId, todoId = todoId)
+        }
+        val matcher = ExampleMatcher.matchingAll()
+            .withIgnoreNullValues()
+            .withIgnoreCase()
+        val example = Example.of(probe, matcher)
+
+        val userTodo = userTodoRepository.findOne(example)
+            .orElseThrow { SDKException(SDKSpec.FAIL_TODO_GET) }
+
+        return userTodo.todo ?: throw SDKException(SDKSpec.FAIL_TODO_GET)
+    }
+
     @Transactional
     override fun createTodo(userId: Int, todoInfo: TodoInfoEntity): Boolean {
         val savedTodo = todoInfoRepository.save(todoInfo)
@@ -76,20 +91,31 @@ class TodoServiceImpl(
         return true
     }
 
-    override fun searchTodo(userId: Int, todoId: Int): TodoInfoEntity? {
-        val probe = UserTodoEntity().apply {
-            id = UserTodoId(userId = userId, todoId = todoId)
+    override fun searchTodo(userId : Int,title : String?,content : String?): List<TodoInfoEntity> {
+        val probe = TodoInfoEntity().apply {
+            this.title = title
+            this.content = content
         }
         val matcher = ExampleMatcher.matchingAll()
             .withIgnoreNullValues()
             .withIgnoreCase()
-
+            .withMatcher("title", ExampleMatcher.GenericPropertyMatchers.contains())   // LIKE %title%
+            .withMatcher("content", ExampleMatcher.GenericPropertyMatchers.contains()) // LIKE %content%
         val example = Example.of(probe, matcher)
-        val userTodoEntity = userTodoRepository.findOne(example)
-        if(userTodoEntity.isPresent)
-            return userTodoEntity.get().todo
-        else
-            return TodoInfoEntity()
+
+        val likeMatched: List<TodoInfoEntity> = todoInfoRepository.findAll(example)
+        if (likeMatched.isEmpty()) return emptyList()
+
+        val matchedIds = likeMatched.mapNotNull { it.id }.toSet()
+        if (matchedIds.isEmpty()) return emptyList()
+
+        val myUserTodos: List<UserTodoEntity> =
+            userTodoRepository.findAllByIdUserIdAndIdTodoIdIn(userId, matchedIds)
+
+        return myUserTodos.mapNotNull { it.todo }
+
+
+
     }
 
 }

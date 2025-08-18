@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface UserTodoRepository : JpaRepository<UserTodoEntity, UserTodoId> {
+    fun findAllByIdUserIdAndIdTodoIdIn(userId: Int, todoIds: Collection<Int>): List<UserTodoEntity>
 }
