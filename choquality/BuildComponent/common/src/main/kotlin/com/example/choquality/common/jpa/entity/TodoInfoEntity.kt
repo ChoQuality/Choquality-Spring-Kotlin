@@ -18,6 +18,10 @@ open class TodoInfoEntity (
     @Column(name = "title")
     open var title: String? = null,
 
+    @Comment("todo content")
+    @Column(name = "title")
+    open var content: String? = null,
+
     @Comment("todo writer")
     @Column(name = "writer")
     open var writer: String? = null

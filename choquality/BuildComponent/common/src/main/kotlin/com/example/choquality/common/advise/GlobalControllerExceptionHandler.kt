@@ -1,16 +1,17 @@
-package com.example.choquality.common.exception
+package com.example.choquality.common.advise
 
 
+import com.example.choquality.common.exception.SDKException
 import org.springframework.http.HttpStatus
-import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
+import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.NoHandlerFoundException
 
-@ControllerAdvice
+@RestControllerAdvice
 class GlobalControllerExceptionHandler {
 
-    @ExceptionHandler(value = [NullPointerException::class, SecurityException::class])
+    @ExceptionHandler(value = [NullPointerException::class, SecurityException::class, SDKException::class])
     fun handleForbidden(): ModelAndView =
         ModelAndView("error/403").apply { status = HttpStatus.FORBIDDEN }
 

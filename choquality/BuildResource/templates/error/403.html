@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>403 | 요청한 페이지의 접근권한이 없습니다</title>
+  <style>
+    :root{
+      --primary:#2E5BFF;
+      --text:#0f172a;
+      --muted:#64748b;
+      --bg:#ffffff;
+      --btn:#111827;
+      --btn-text:#ffffff;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; background:var(--bg); color:var(--text);
+      font-family: system-ui,-apple-system,Segoe UI,Roboto,Apple SD Gothic Neo,
+      Noto Sans KR,Pretendard,sans-serif;
+      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+    }
+    .wrap{min-height:100vh; display:grid; place-items:center; padding:4rem 1rem}
+    .card{text-align:center; max-width:720px}
+    .code{
+      font-weight:800; line-height:1; color:var(--primary);
+      font-size:clamp(64px, 12vw, 140px); letter-spacing:.02em;
+    }
+    .label{
+      margin-top:.5rem; font-size:.875rem; letter-spacing:.35em;
+      color:var(--muted); font-weight:700;
+    }
+    h1{
+      margin:2rem 0 .75rem; font-size:clamp(20px, 3.2vw, 28px);
+      line-height:1.35; font-weight:700;
+    }
+    p{
+      margin:0 auto 2.25rem; max-width:520px; color:var(--muted);
+      font-size:clamp(14px, 2.4vw, 16px); line-height:1.7;
+    }
+    .btn{
+      display:inline-flex; align-items:center; gap:.5rem;
+      background:var(--btn); color:var(--btn-text); text-decoration:none;
+      padding:.9rem 1.25rem; border-radius:9999px; font-weight:700;
+      box-shadow:0 6px 18px rgba(0,0,0,.08);
+      transition:transform .15s ease, box-shadow .15s ease, opacity .15s ease;
+    }
+    .btn:hover{transform:translateY(-1px); box-shadow:0 10px 24px rgba(0,0,0,.12)}
+    .btn:active{transform:translateY(0)}
+    .btn svg{width:18px;height:18px;display:block}
+  </style>
+</head>
+<body>
+<main class="wrap">
+  <section class="card" role="alert" aria-live="polite">
+    <div class="code" aria-hidden="true">404</div>
+    <div class="label" aria-hidden="true">ERROR</div>
+
+    <h1>요청한 페이지의 접근권한이 없습니다.</h1>
+    <p>
+      현재 로그인 접속 시간이 만료 되었습니다.<br />
+      다시 로그인을 해주세요.
+    </p>
+
+    <a class="btn" href="/">
+      홈으로 돌아가기
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </a>
+  </section>
+</main>
+</body>
+</html>

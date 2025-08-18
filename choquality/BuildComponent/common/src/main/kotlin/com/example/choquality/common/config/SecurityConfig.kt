@@ -56,20 +56,12 @@ class SecurityConfig(
                             "/static/assets/**"
                         )
                     ).permitAll()
-
-                    .requestMatchers(
-                        HttpMethod.GET,
-                        *arrayOf(
-                            "/"
-                        )
-                    ).permitAll()
-
+                    .requestMatchers(HttpMethod.GET).permitAll()
                     .requestMatchers(
                         HttpMethod.POST,*arrayOf("/login/**")
                     ).permitAll()
 
                     .requestMatchers(HttpMethod.OPTIONS).denyAll()
-                    .requestMatchers(HttpMethod.GET).denyAll()
                     .requestMatchers(HttpMethod.POST).denyAll()
                     .requestMatchers(HttpMethod.PUT).denyAll()
                     .requestMatchers(HttpMethod.DELETE).denyAll()
