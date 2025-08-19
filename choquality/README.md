@@ -68,7 +68,7 @@ choquality/
 3. todo test
 ![todo test.png](Doc/todo%20test.png)
 
-## Git clone
+## Git clone 후 테스트(TotalFlowTest) 실행 방법 및 bootJar 실행 방법
 ````
 git clone https://github.com/ChoQuality/Choquality-Spring-Kotlin.git
 ````
@@ -78,19 +78,18 @@ cd Choquality-Spring-Kotlin
 ````
 cd choquality
 ````
-
-## 테스트(TotalFlowTest) 실행 방법
-``
+#### 테스트(TotalFlowTest) 실행 방법
+````
 ./gradlew test --tests com.example.choquality.proxy.TotalFlowTest
-``
-## 실행 방법
-``
+````
+#### bootJar 실행 방법
+````
 ./gradlew clean build bootJar
-``
-
-``
+````
+````
 java -jar ./ProxyMain/build/libs/ProxyMain-ver0001.jar
-``
+````
+
 ## API 설명
 
 ### 1. API 명세서 http 파일
