@@ -55,6 +55,12 @@ class TotalFlowTest(
             .exchange()
             .expectStatus().isOk
 
+        client.post().uri("/users/signup")
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(mapOf("email" to "1@gg.gg","name" to "1@gg", "password" to "1234"))
+            .exchange()
+            .expectStatus().isEqualTo(HttpStatus.CONFLICT)
+
         val login = client.post().uri("/users/login")
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(mapOf("email" to "1@gg.gg", "password" to "1234"))

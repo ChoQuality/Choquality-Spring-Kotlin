@@ -1,7 +1,3 @@
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-
-
 val profile = "local"
 
 fun Project.setResource(profile: String) {

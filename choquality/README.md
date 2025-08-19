@@ -18,33 +18,33 @@ choquality/
 │  │     ├─ jpa/                            # JPA(entity,repository) 처리
 │  │     ├─ jwt/                            # JWT 인터페이스 파일
 │  │     ├─ mapper/                         # entity 확장 fun 처리
-│  │     ├─ service/                        # 공통 설정 프로퍼티 관리
-│  │     ├─ spec/                           # 공통 설정 프로퍼티 관리
+│  │     ├─ service/                        # common 모듈 내 Service 정의
+│  │     ├─ spec/                           # 에러/성공 상태 코드와 메시지를 정의
 │  │     └─ user/                           # custom 인증 유저 
 │  │     
 │  └─ todo/                                 # todo 모듈
 │     └─ com.example.choquality.common
-│        ├─ properties/                     # 공통 설정 프로퍼티 관리
-│        └─ properties/                     # 공통 설정 프로퍼티 관리
+│        ├─ advise/                         # RestControllerAdvice 설정 
+│        ├─ controller/                     # 컨트롤러 계층 (API, 요청 처리)
+│        ├─ dto/                            # Data Transfer Object
+│        ├─ mapper/                         # entity 확장 fun 처리
+│        └─ service/                        # todo 모듈 내 Service 정의
+│
 │
 ├─ BuildGradle/                             # 그레이들 모음
 │  ├─ build-common.gradle/                  # 공통 dependencies 모음
 │  ├─ build-datasource.gradle/              # DB dependencies 모음
 │  ├─ build-jwt.gradle/                     # jwt dependencies 모음
 │  ├─ build-springboot3.gradle/             # springboot 관련 dependencies 모음
-│  └─ build-datasource.gradle/              # HTML/CSS/IMG/JS 등 리소스 템플릿
+│  └─ build-test.gradle/                    # test 관련 dependencies 모음
 │
 ├─ BuildLibs/                               # component 모듈 jar 생성 폴더
 │  ├─ common/                               # component 모듈 중 common jar 생성 폴더
 │  └─ todo/                                 # component 모듈 중 todo jar 생성 폴더
 │
-├─ BuildGradle/                             # 그레이들 모음
-│  ├─ build-common.gradle/                  # HTML/CSS/IMG/JS 등 리소스 템플릿
-│  └─ build-datasource.gradle/              # HTML/CSS/IMG/JS 등 리소스 템플릿
-│
-├─ BuildProperties/                         # 빌드 리소스
-│  ├─ build-common.gradle/                  # HTML/CSS/IMG/JS 등 리소스 템플릿
-│  └─ build-datasource.gradle/              # HTML/CSS/IMG/JS 등 리소스 템플릿
+├─ BuildProperties/                         # YML 파일 위치
+│  ├─ dev/                                  # 개발 환경 시 yml 파일
+│  └─ local/                                # local 환경 시 yml 파일
 │
 ├─ BuildResource/                           # 빌드 리소스
 │  ├─ static/                               # CSS/IMG/JS 등 리소스 
@@ -53,16 +53,19 @@ choquality/
 └─ ProxyMain/                               # Wrapping 모듈 [해당 모듈 명으로 BootJar 생성]
    ├─ build/                                # gradlew clean build bootJar 시 생성
    │  ├─ ... 생략 .../                       # gradlew clean build bootJar 시 생성
-   │  └─ libs/                              # thymeleaf HTML 템플릿
+   │  └─ libs/                              # 프로젝트 실행 파일 생성 위치 ProxyMain-ver0001.jar
    └─ com.example.choquality.proxy/         # SpringBootApplication 설정 위치
 
 ````
 2. 프로젝트 구성 
 ![프로젝트 구성.png](Doc/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%20%EA%B5%AC%EC%84%B1.png)
 
-## 흐름도 
+## 흐름도(TotalFlowTest) 
 
-
+## 테스트 실행 방법
+``
+./gradlew test --tests com.example.choquality.proxy.TotalFlowTest
+``
 ## 실행 방법
 ``
 ./gradlew clean build bootJar
