@@ -1,6 +1,64 @@
-## 구성도
-![프로젝트 구성.png](Doc/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%20%EA%B5%AC%EC%84%B1.png)
+## Application Architecture
+* 마이크로 서비스 구조로 추후 변경이 쉽도로 별도의 모듈식 프로젝트 구성
 
+1. 프로젝트 구조
+````
+choquality/
+│
+├─ BuildComponent/                          # component 모듈 위치
+│  ├─ common/                               # common 모듈
+│  │  └─ com.example.choquality.common
+│  │     ├─ advise/                         # RestControllerAdvice 설정 
+│  │     ├─ config/                         # 인증/DB/JWT/Security/Web 설정
+│  │     ├─ constant/                       # 상수 정의
+│  │     ├─ controller/                     # 컨트롤러 계층 (API, 요청 처리)
+│  │     ├─ dto/                            # Data Transfer Object
+│  │     ├─ exception/                      # 예외 처리
+│  │     ├─ filter/                         # 필터 관련 처리
+│  │     ├─ jpa/                            # JPA(entity,repository) 처리
+│  │     ├─ jwt/                            # JWT 인터페이스 파일
+│  │     ├─ mapper/                         # entity 확장 fun 처리
+│  │     ├─ service/                        # 공통 설정 프로퍼티 관리
+│  │     ├─ spec/                           # 공통 설정 프로퍼티 관리
+│  │     └─ user/                           # custom 인증 유저 
+│  │     
+│  └─ todo/                                 # todo 모듈
+│     └─ com.example.choquality.common
+│        ├─ properties/                     # 공통 설정 프로퍼티 관리
+│        └─ properties/                     # 공통 설정 프로퍼티 관리
+│
+├─ BuildGradle/                             # 그레이들 모음
+│  ├─ build-common.gradle/                  # 공통 dependencies 모음
+│  ├─ build-datasource.gradle/              # DB dependencies 모음
+│  ├─ build-jwt.gradle/                     # jwt dependencies 모음
+│  ├─ build-springboot3.gradle/             # springboot 관련 dependencies 모음
+│  └─ build-datasource.gradle/              # HTML/CSS/IMG/JS 등 리소스 템플릿
+│
+├─ BuildLibs/                               # component 모듈 jar 생성 폴더
+│  ├─ common/                               # component 모듈 중 common jar 생성 폴더
+│  └─ todo/                                 # component 모듈 중 todo jar 생성 폴더
+│
+├─ BuildGradle/                             # 그레이들 모음
+│  ├─ build-common.gradle/                  # HTML/CSS/IMG/JS 등 리소스 템플릿
+│  └─ build-datasource.gradle/              # HTML/CSS/IMG/JS 등 리소스 템플릿
+│
+├─ BuildProperties/                         # 빌드 리소스
+│  ├─ build-common.gradle/                  # HTML/CSS/IMG/JS 등 리소스 템플릿
+│  └─ build-datasource.gradle/              # HTML/CSS/IMG/JS 등 리소스 템플릿
+│
+├─ BuildResource/                           # 빌드 리소스
+│  ├─ static/                               # CSS/IMG/JS 등 리소스 
+│  └─ templates/                            # thymeleaf HTML 템플릿
+│
+└─ ProxyMain/                               # Wrapping 모듈 [해당 모듈 명으로 BootJar 생성]
+   ├─ build/                                # gradlew clean build bootJar 시 생성
+   │  ├─ ... 생략 .../                       # gradlew clean build bootJar 시 생성
+   │  └─ libs/                              # thymeleaf HTML 템플릿
+   └─ com.example.choquality.proxy/         # SpringBootApplication 설정 위치
+
+````
+2. 프로젝트 구성 
+![프로젝트 구성.png](Doc/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%20%EA%B5%AC%EC%84%B1.png)
 
 ## 흐름도 
 
