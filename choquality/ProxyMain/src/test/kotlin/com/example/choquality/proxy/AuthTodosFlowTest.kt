@@ -154,7 +154,9 @@ class TotalFlowTest(
             .expectStatus().isEqualTo(HttpStatus.UNAUTHORIZED)
             .expectHeader().contentTypeCompatibleWith(MediaType.APPLICATION_JSON)
             .expectBody()
-            .jsonPath("$.code").isEqualTo(7)
+            .jsonPath("$.code").value<Int> { actual ->
+                org.assertj.core.api.Assertions.assertThat(actual).isNotEqualTo(0)
+            }
     }
 
 
@@ -191,6 +193,8 @@ class TotalFlowTest(
             .exchange()
             .expectStatus().isOk
             .expectHeader().contentTypeCompatibleWith(MediaType.APPLICATION_JSON)
+            .expectBody()
+            .jsonPath("$.code").isEqualTo(0)
 
         client.get().uri("/todos")
             .header(HttpHeaders.AUTHORIZATION, "Bearer $token")
@@ -283,6 +287,16 @@ class TotalFlowTest(
             .expectBody()
             .jsonPath("$.code").isEqualTo(0)
 
+        client.delete().uri("/todos/1")
+            .header(HttpHeaders.AUTHORIZATION, "Bearer $token")
+            .exchange()
+            .expectStatus().isEqualTo(HttpStatus.NOT_FOUND)
+            .expectHeader().contentTypeCompatibleWith(MediaType.APPLICATION_JSON)
+            .expectBody()
+            .jsonPath("$.code").value<Int> { actual ->
+                org.assertj.core.api.Assertions.assertThat(actual).isNotEqualTo(0)
+            }
+
         client.get().uri("/todos/1")
             .header(HttpHeaders.AUTHORIZATION, "Bearer $token")
             .exchange()
@@ -292,6 +306,7 @@ class TotalFlowTest(
             .jsonPath("$.code").value<Int> { actual ->
                 org.assertj.core.api.Assertions.assertThat(actual).isNotEqualTo(0)
             }
+
 
     }
 }

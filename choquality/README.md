@@ -61,8 +61,14 @@ choquality/
 ![프로젝트 구성.png](Doc/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%20%EA%B5%AC%EC%84%B1.png)
 
 ## 흐름도(TotalFlowTest) 
+1. login test
+![login test.png](Doc/login%20test.png)
+2. user test
+![user test.png](Doc/user%20test.png)
+3. todo test
+![todo test.png](Doc/todo%20test.png)
 
-## 테스트 실행 방법
+## 테스트(TotalFlowTest) 실행 방법
 ``
 ./gradlew test --tests com.example.choquality.proxy.TotalFlowTest
 ``
