@@ -68,6 +68,17 @@ choquality/
 3. todo test
 ![todo test.png](Doc/todo%20test.png)
 
+## Git clone
+````
+git clone https://github.com/ChoQuality/Choquality-Spring-Kotlin.git
+````
+````
+cd Choquality-Spring-Kotlin
+````
+````
+cd choquality
+````
+
 ## 테스트(TotalFlowTest) 실행 방법
 ``
 ./gradlew test --tests com.example.choquality.proxy.TotalFlowTest
