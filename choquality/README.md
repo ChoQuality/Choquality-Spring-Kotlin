@@ -1,6 +1,11 @@
+## 구성도
+![프로젝트 구성.png](Doc/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%20%EA%B5%AC%EC%84%B1.png)
+
+
+## 흐름도 
+
+
 ## 실행 방법
-
-
 ``
 ./gradlew clean build bootJar
 ``
@@ -8,6 +13,89 @@
 ``
 java -jar ./ProxyMain/build/libs/ProxyMain-ver0001.jar
 ``
-## API 명세 요약
+## API 설명
 
-``curl --location 'http://localhost:9090/init'``
+### 1. API 명세서 http 파일
+[API 명세서.http](Doc/API%20%EB%AA%85%EC%84%B8%EC%84%9C.http) 참조
+
+### 2. API 명세서 내용
+
+#### DB 값 전체 초기화
+GET http://localhost:9090/init
+
+#### 유저 signup : 이메일 이름 패스워드로 유저 등록 한다.
+POST http://localhost:9090/users/signup
+Content-Type: application/json
+
+{
+"email":"1@gg.gg"
+,"name":"1gg"
+,"password":"1234"
+}
+
+#### 유저 login : signup 된 유저 이메일과 패스워드로 로그인 한다.
+POST http://localhost:9090/users/login
+Content-Type: application/json
+
+{
+"email":"1@gg.gg"
+,"password":"1234"
+}
+
+> {% client.global.set("access_token", response.body.access_token); %}
+
+#### 유저 me(GET) : Bearer token이랑 같이 요청 시 해당 유저 정보의 값을 준다.
+GET http://localhost:9090/users/me
+Authorization: Bearer {{access_token}}
+
+#### 유저 me(PUT) : Bearer token으로 인증된 유저의 이름 혹은 비밀번호를 변경한다. 예제는 이름
+PUT http://localhost:9090/users/me
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+"name":"변경이름"
+}
+
+#### 유저 me(DELETE) : Bearer token으로 인증된 현재 유저 삭제 한다.
+DELETE http://localhost:9090/users/me
+Authorization: Bearer {{access_token}}
+
+#### todos(POST) : TODO 등록. 인증된 유저(Bearer토큰)만 등록이 가능하다.
+POST http://localhost:9090/todos
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+"title": "title2"
+,"content" :"content2"
+}
+
+#### todos(GET) : 등록된 TODO 리스트 조회. (자신이 등록한 todo만 조회 가능하다.)
+GET http://localhost:9090/todos
+Authorization: Bearer {{access_token}}
+
+
+#### todos id(GET) : 등록된 TODO 단일 조회. (자신이 등록한 todo만 조회 가능하다.)
+@todoId=1
+GET http://localhost:9090/todos/{{todoId}}
+Authorization: Bearer {{access_token}}
+
+#### todos id(PUT) : 등록된 TODO 단일 수정. (자신이 등록한 todo만 수정 가능하다.)
+PUT http://localhost:9090/todos/{{todoId}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+"title": "title2"
+,"content" :"content2"
+}
+
+#### todos id(DELETE) : 등록된 TODO 단일 삭제. (자신이 등록한 todo만 수정 가능하다.)
+DELETE http://localhost:9090/todos/{{todoId}}
+Authorization: Bearer {{access_token}}
+
+#### todos search(GET) : 등록된 TODO 검색. (자신이 등록한 todo만 검색 가능하며, title 혹은 content로 like 검색)
+@title=2
+GET http://localhost:9090/todos/search?title={{title}}
+Authorization: Bearer {{access_token}}

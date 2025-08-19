@@ -68,12 +68,11 @@ Content-Type: application/json
     ,"content" :"content2"
 }
 
-### todos id(PUT) : 등록된 TODO 단일 수정. (자신이 등록한 todo만 수정 가능하다.)
+### todos id(DELETE) : 등록된 TODO 단일 삭제. (자신이 등록한 todo만 수정 가능하다.)
 DELETE http://localhost:9090/todos/{{todoId}}
 Authorization: Bearer {{access_token}}
-Content-Type: application/json
 
-{
-  "title": "title2"
-,"content" :"content2"
-}
+### todos search(GET) : 등록된 TODO 검색. (자신이 등록한 todo만 검색 가능하며, title 혹은 content로 like 검색)
+@title=2
+GET http://localhost:9090/todos/search?title={{title}}
+Authorization: Bearer {{access_token}}
